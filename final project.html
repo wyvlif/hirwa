@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List App</title>
+ 
+    
+    
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, white 20%,cyan)
+    }
+
+    #app {
+      max-width: 400px;
+      width: 100%;
+    }
+
+    #taskList {
+      list-style-type:inherit;
+      padding: 16px 50px;
+      
+      
+      
+    }
+
+    .task {
+      background-color: #fff;
+      padding: 10px;
+      margin-right: 90px;
+      margin-bottom: 10px;
+      border-radius: 30px;
+      display: flex;
+      justify-content:space-between;
+      align-items:center;
+      
+    }
+
+    .task.important {
+      background-color: #153b31;
+    }
+
+    .task input[type="text"] {
+      flex: auto;
+      margin-right: 10px;
+    }
+
+    .task button {
+      cursor: pointer;
+    }
+    *{
+    margin: 0;
+    padding: 0;
+    border: 5px;
+    font-family: 'poppins', sans-serif;
+    box-sizing: content-box;
+    display: flexbox;
+    }
+
+
+.todo-app{
+    width: 100%;
+    max-width: 540px;
+    background: #37b87a21;
+    margin:10px auto 10px ;
+    padding: 40px 30px 70px ;
+    border-radius: 10px;
+    align-items: center;
+    
+}
+.todo-app h2{
+    color: rgb(25, 49, 41);
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.todo-app img{
+    width: 30px;
+    margin-left: 3px;
+    
+}
+.row{
+    display:flex ;
+    align-items:center ;
+    justify-content:space-between ;
+    background: #3c784e;
+    border-radius:30px ;
+    padding-left: 20px;
+    margin-bottom: 25px;
+}
+input{
+    flex:auto;
+    border:none;
+    outline: none;
+    background: transparent;
+    padding: 10px;
+    font-weight: 18px;
+    margin-left: 12px;
+    
+}
+button{
+    border: none;
+    outline: none;
+    padding: 16px 50px;
+    background: #1b4628;
+    color: antiquewhite;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 40px;
+
+}
+ul li{
+    list-style: none;
+    font-size: 17px;
+    padding: 12px 8px 12px 50px;
+    user-select: none;
+    cursor: pointer;
+    position: relative;
+}
+ul li::before{
+    content:'' ;
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    border-radius:50% ;
+    background-image: url(unchecked.png) ;
+    background-size: cover;
+    background-position: center ;
+    bottom: 25px;
+    left: 8px;
+}
+ul li.checked{
+    color: black;
+    text-decoration:wavy;
+}
+ul li.checked::before{
+    background-image: url(checked.png) ;
+
+}
+ul li span{
+    position: absolute;
+    right: 0;
+    top: 5px; 
+    width: 40px; 
+    height: 40px; 
+    font-size: 22px ;
+    color:#1b4628 ;
+    line-height:40px ;
+    text-align: center;
+    border-radius: 50%;
+}
+
+ 
+ </style>
+</head>
+<body>
+
+  <div class="todo-app" id="app">
+    <h2>To-Do List<img src="To do list icon.png"></h2>
+    <ul id="taskList"></ul>
+    <input type="text" id="newTask" placeholder="Add a new task...">
+    <button onclick="addTask()">Submit</button>
+  </div>
+
+    <script>
+      const taskList = document.getElementById('taskList');
+      const newTaskInput = document.getElementById('newTask');
+
+      function addTask() {
+        const taskText = newTaskInput.value.trim();
+        if (taskText !== ''){
+            
+          const taskItem = document.createElement('li');
+          taskItem.classList.add('task');
+          taskItem.innerHTML = `
+            <input type="text" value="${taskText}" readonly>
+            <button onclick="editTask(this)">Edit</button>
+            <button onclick="toggleImportant(this)">Important</button>
+            <button onclick="deleteTask(this)">Delete</button>
+          `;
+          taskList.appendChild(taskItem);
+         } newTaskInput.value = '';
+        saveData();
+        }
+
+    
+     
+
+     taskList.addEventListener("click",function(e){
+     if(e.target.tagName === "LI"){
+        e.target.classList.toggle("checked");
+        saveData();
+      }
+      else if(e.target.tagName === "SPAN"){
+        e.target.parentElement.remove();
+        saveData();
+     }
+     }, false);
+
+     function saveData(){
+      localStorage.setItem("data", taskList.innerHTML);
+      }
+      function showTask(){
+       taskList.innerHTML = localStorage.getItem("data");
+     }
+     showTask();
+
+
+      function editTask(button) {
+        const taskInput = button.parentNode.querySelector('input[type="text"]');
+        taskInput.removeAttribute('readonly');
+        taskInput.focus();
+        button.textContent = 'Save';
+        button.onclick = function () {
+          taskInput.setAttribute('readonly', true);
+          button.textContent = 'Edit';
+          button.onclick = function () {
+            editTask(button);
+          };
+        };
+        saveData();
+      }
+      
+
+      function toggleImportant(button) {
+        const taskItem = button.parentNode;
+        taskItem.classList.toggle('important');
+        saveData();
+      }
+      
+
+      function deleteTask(button) {
+        const taskItem = button.parentNode;
+        taskList.removeChild(taskItem);
+        saveData();
+      }
+      
+    </script>
+  
+</body>
+</html>
